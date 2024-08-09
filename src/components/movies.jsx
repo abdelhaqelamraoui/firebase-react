@@ -7,13 +7,15 @@ import {
 } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import "../assets/css/movies.css";
-import { auth, db } from "../config/firebase";
+import { auth, db, storage } from "../config/firebase";
+import { ref, uploadBytes } from "firebase/storage";
 
 export const Movies = () => {
    const [moviesList, setMoviesList] = useState([]);
    const [newMovieTitle, setNewMovieTitle] = useState("");
    const [newReleaseDate, setNewReleaseDate] = useState(0);
    const [isNewMovieOscar, setIsNewMovieOscar] = useState(false);
+   const [fileUpload, setFileUpload] = useState(null);
 
    const moviesCollectionRef = collection(db, "movies");
 
@@ -66,6 +68,16 @@ export const Movies = () => {
       // await updateDoc(movieDoc, { title: newDoc });
    };
 
+   const uploadFile = async () => {
+      if (!fileUpload) return;
+      const filesFolderRef = ref(storage, `projectFiles/${fileUpload.name}`);
+      try {
+         await uploadBytes(filesFolderRef, fileUpload);
+      } catch (err) {
+         console.error(err);
+      }
+   };
+
    useEffect(() => {
       getMoviesList();
    }, []);
@@ -93,6 +105,16 @@ export const Movies = () => {
                />
                <label className="checkbox-label"> Received an Oscar</label>
             </div>
+            <fieldset>
+               <input
+                  className="input-field"
+                  type="file"
+                  onChange={(e) => setFileUpload(e.target.files[0])}
+               />
+               <button className="submit-button" onClick={uploadFile}>
+                  Upload
+               </button>
+            </fieldset>
             <button className="submit-button" onClick={onSubmitMovie}>
                Submit Movie
             </button>
