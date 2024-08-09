@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Movies } from "./components/movies";
 import { Auth } from "./components/auth";
 
 function App() {
@@ -7,6 +8,8 @@ function App() {
    return (
       <div>
          <Auth />
+         <hr />
+         <Movies />
       </div>
    );
 }
